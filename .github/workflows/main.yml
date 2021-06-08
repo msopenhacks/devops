@@ -1,0 +1,43 @@
+name: poi-ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 2.1.x
+ 
+    - name: Restore
+      run: dotnet restore poi.csproj
+      working-directory: ./apis/poi/web/
+
+    - name: if failure to restore 
+      if: ${{ failure() }}
+      uses: imjohnbo/issue-bot@v3
+      with:
+        assignees: "frkim"
+        labels: "test"
+        title: challenge 3
+        body: "this is the body message"
+        pinned: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ 
+    - name: Build
+      working-directory: apis/poi/web/
+      run: dotnet build --configuration Release --no-restore
+ 
+    - name: Test
+      working-directory: apis/poi/web/
+      run: dotnet test --no-restore
