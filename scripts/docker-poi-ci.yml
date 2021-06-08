@@ -1,0 +1,20 @@
+pool:
+  name: Hosted Ubuntu 1604
+
+trigger:
+  branches:
+    include:
+        - master
+  paths:
+    include: 
+        - 'apis/poi'
+
+steps:
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'OHDevOps'
+    repository: 'api-poi'
+    command: 'buildAndPush'
+    Dockerfile: '**/apis/poi/web/Dockerfile'
+    tags: '$(Build.BuildId)'

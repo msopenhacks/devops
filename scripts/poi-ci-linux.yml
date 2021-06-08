@@ -1,0 +1,38 @@
+pool:
+  name: Hosted Ubuntu 1604
+#Your build pipeline references an undefined variable named ‘Parameters.projects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ‘Parameters.projects’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk'
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '5.x'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: 'apis/poi/web'
+
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: restore
+    projects: '$(Parameters.projects)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    projects: '$(Parameters.projects)'
+    workingDirectory: apis/poi/web
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit tests'
+  inputs:
+    command: test
+    projects: apis/poi/tests/UnitTests
+    workingDirectory: apis/poi/tests/UnitTests
